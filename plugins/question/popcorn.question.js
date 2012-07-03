@@ -13,34 +13,33 @@
          // this refers to the popcorn object
 
          var target = document.getElementById( options.target ),
+         qid = options.qid,
          questionType = options.questionType,
          question = options.question,
          alternatives = options.alternatives,
          answer = options.answer,
-         jump_time = options.jump_time;
-
+         jump_time = options.jump_time,
+         start = options.start;         
          //TODO: validate all params
 
          // Create seperate container for plugin
          options._container = document.createElement( "div" );
          options._container.id = "questiondiv-" + Popcorn.guid();
          options._container.style.display = "none";
-
-         var commonDiv = document.createElement("div");
-          
+         
          if (questionType === "multiple_choice") {
+
+            var commonDiv = document.createElement("div");           
+
             commonDiv.innerHTML = question + "<br />";
             for (var i = 0, len = alternatives.length; i < len; i++) {
                var checkbox = document.createElement("input");               
                checkbox.setAttribute("type","checkbox");
-               checkbox.setAttribute("id","question"+i);
-               checkbox.setAttribute("name","question"+i);
+               checkbox.setAttribute("id","question"+i+"-"+qid);
+               checkbox.setAttribute("name","question");
                checkbox.setAttribute("value", alternatives[i]);
                commonDiv.appendChild(checkbox);
-               commonDiv.innerHTML += alternatives[i] + "<br />";               
-               // commonDiv.innerHTML += 
-               //    '<input type="checkbox" name="question" value=""/>' 
-               //    + alternatives[i] + "<br />";
+               commonDiv.innerHTML += alternatives[i] + "<br />";
             }
             var btn = document.createElement("input");
             btn.setAttribute("type","button");
@@ -48,18 +47,93 @@
             btn.addEventListener( "click", function() {
                var correct = true;
                for (var i = 0; i < answer.length; i++) {
-                 var id_str = "question"+i;
+                 var id_str = "question"+i+"-"+qid;
                  var chckBox = document.getElementById(id_str);
                  if (chckBox.checked != answer[i]) {
                     correct = false;
                  }
                }
-               if (correct) alert("Correct, congratz!");
-               else alert("Sorry,its incorrect. Try again :)");
-               options._container.style.display = "none";
-               continue_video(10);
+               if (correct) {
+                  alert("Congratz!!! You got it!!! :)");
+                  if (options.jump_time) {                                       
+                     btnJump = document.createElement("input");
+                     btnJump.setAttribute("type","button");
+                     btnJump.setAttribute("id","buttonJump");
+                     btnJump.setAttribute("value","Jump Solution");
+                     btnJump.addEventListener( "click", function() {
+                        continue_video(jump_time);
+                        options._container.style.display = "none";
+                     }, false);
+                     commonDiv.appendChild(btnJump);
+                  }
+               }
+               else {
+                  alert("Sorry,its incorrect. Try again :)");
+               }                              
             }, false);
-            commonDiv.appendChild(btn);            
+            commonDiv.appendChild(btn);
+            btnContinue = document.createElement("input");
+            btnContinue.setAttribute("type","button");
+            btnContinue.setAttribute("value","Continue");
+            btnContinue.addEventListener( "click", function() {
+               continue_video(start);
+               options._container.style.display = "none";
+            }, false);
+            commonDiv.appendChild(btnContinue);           
+            options._container.appendChild( commonDiv );
+         }
+         if (questionType === "single_choice") {
+
+            var commonDiv = document.createElement("div"); 
+
+            commonDiv.innerHTML = question + "<br />";
+            for (var i = 0, len = alternatives.length; i < len; i++) {
+               var radio = document.createElement("input");               
+               radio.setAttribute("type","radio");
+               radio.setAttribute("id","question"+i+"-"+qid);               
+               radio.setAttribute("name","question");
+               radio.setAttribute("value", i);
+               commonDiv.appendChild(radio);
+               commonDiv.innerHTML += alternatives[i] + "<br />";
+            }
+            var btn = document.createElement("input");
+            btn.setAttribute("type","button");
+            btn.setAttribute("id","btnAnswer");
+            btn.setAttribute("value","Answer");
+            btn.addEventListener( "click", function() {
+               var correct = false;
+               var id_str = "question"+answer+"-"+qid;
+               var radio = document.getElementById(id_str);
+               if (radio.checked) {
+                    correct = true;
+               }               
+               if (correct) {
+                  alert("Congratz!!! You got it!!! :)");                  
+                  if (options.jump_time) {
+                     btnJump = document.createElement("input");
+                     btnJump.setAttribute("type","button");
+                     btnJump.setAttribute("id","buttonJump");
+                     btnJump.setAttribute("value","Jump Solution");
+                     btnJump.addEventListener( "click", function() {
+                        continue_video(jump_time);
+                        options._container.style.display = "none";
+                     }, false);
+                     commonDiv.appendChild(btnJump);
+                  }
+               }
+               else {
+                  alert("Sorry,its incorrect. Try again :)");
+               }                              
+            }, false);
+            commonDiv.appendChild(btn);
+            btnContinue = document.createElement("input");
+            btnContinue.setAttribute("type","button");
+            btnContinue.setAttribute("value","Continue");
+            btnContinue.addEventListener( "click", function() {
+               continue_video(start);
+               options._container.style.display = "none";
+            }, false);
+            commonDiv.appendChild(btnContinue);           
             options._container.appendChild( commonDiv );
          }       
          target && target.appendChild( options._container );

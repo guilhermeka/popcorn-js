@@ -11,15 +11,24 @@
       .volume(0)
       .play()
       .question( {
-      		questionType:"multiple_choice",
-      		target: "questiondiv",
-      		start: 1,
-      		question: "Which of the statements are true?",
-      		alternatives: ["Aaa","Bbb","Ccc"],
-      		answer: [true,false,false],
-      		// countdown: 10,
-      		// countdown_target: "countdiv",
-      		jump_time: 9
+          qid: "0", 
+          questionType:"multiple_choice",
+          target: "questiondiv",
+          start: 1,
+          question: 'Which of the statements are true? <img src="http://2.bp.blogspot.com/_zPRD1mS0Unc/Sw5_70tqmWI/AAAAAAAAABQ/ZC54Q5sxjXU/s400/pitagorassdd.JPG" align="left" />',
+          alternatives: ["Aaa","Bbb","Ccc"],
+          answer: [true,false,true]
+          //jump_time: 5
+      } )
+      .question( {
+          qid:"1",
+          questionType:"single_choice",
+          target: "questiondiv",
+          start: 7,
+          question: 'Which of the statements are true? <img src="http://www.themetatron.com/wp-content/uploads/2011/01/Skrillex-Logo-original.jpg" align="left" />',
+          alternatives: ["This","That","Those"],
+          answer: 2,
+          jump_time: 10
       } );
     }, false);
 </script>
@@ -29,7 +38,7 @@
 
 <h1 id="qunit-header">Popcorn Question Plug-in Demo</h1>
 <p>You will see all types of questions you can include in your videos. A multiple choice example, a select one answer, a question with text answer, a question with numeric answer and a discursive answer.</p>
-<p>In all types you could select the time to launch the question, stoping video. You can answer the question as many times you want, receiving the feedback if your answer was correct or not. After answer the question, the following options are available: see question resolution (continue video) or jump  the question resolution (jump to a future point in the video).</p>
+<p>In all types you could select the time to launch the question, stoping video. You can answer the question as many times you want, receiving the feedback if your answer was correct or not. To continue the video there is a button called Continue, available even if you dont want to answer. After answer the question, you could show optionally a button called Jump Solution (jump to a future point in the video).</p>
 <div>
 <video id="video"
   controls 
@@ -48,9 +57,7 @@
 
 </video>
 </div>
-<div>
 <div id="questiondiv"></div>
-</div>
 
 </body>
 
