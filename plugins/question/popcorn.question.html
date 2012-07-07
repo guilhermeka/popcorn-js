@@ -3,6 +3,7 @@
 <head>
 	<title>Popcorn Question Plug-in Demo</title>
 
+<!-- <script src="http://popcornjs.org/code/dist/popcorn-complete.min.js"></script> -->
 <script src="../../popcorn.js"></script>
 <script src="popcorn.question.js"></script>
 <script>
@@ -14,7 +15,7 @@
           qid: "0", 
           questionType:"multiple_choice",
           target: "questiondiv",
-          start: 1,
+          start: 12,
           question: 'Which of the statements are true? <img src="http://2.bp.blogspot.com/_zPRD1mS0Unc/Sw5_70tqmWI/AAAAAAAAABQ/ZC54Q5sxjXU/s400/pitagorassdd.JPG" align="left" />',
           alternatives: ["Aaa","Bbb","Ccc"],
           answer: [true,false,true]
@@ -29,6 +30,15 @@
           alternatives: ["This","That","Those"],
           answer: 2,
           jump_time: 10
+      } )
+      .question( {
+          qid:"2",
+          questionType:"numerical_answer",
+          target: "questiondiv",
+          start: 1,
+          question: 'Qual o valor de <em>a</em>? <img src="http://www.repolhopolis.kit.net/hipotenusa.gif" align="left" />',
+          answer: 5,
+          jump_time: 5
       } );
     }, false);
 </script>

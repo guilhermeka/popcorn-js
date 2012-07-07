@@ -4,7 +4,7 @@
       Popcorn.instances.forEach( function( video ) {
          video.currentTime(time).play();
       });
-   }   
+   }
 
    Popcorn.plugin( "question" , {
       _setup : function( options ) {
@@ -26,10 +26,10 @@
          options._container = document.createElement( "div" );
          options._container.id = "questiondiv-" + Popcorn.guid();
          options._container.style.display = "none";
+
+         var commonDiv = document.createElement("div");
          
          if (questionType === "multiple_choice") {
-
-            var commonDiv = document.createElement("div");           
 
             commonDiv.innerHTML = question + "<br />";
             for (var i = 0, len = alternatives.length; i < len; i++) {
@@ -71,16 +71,7 @@
                   alert("Sorry,its incorrect. Try again :)");
                }                              
             }, false);
-            commonDiv.appendChild(btn);
-            btnContinue = document.createElement("input");
-            btnContinue.setAttribute("type","button");
-            btnContinue.setAttribute("value","Continue");
-            btnContinue.addEventListener( "click", function() {
-               continue_video(start);
-               options._container.style.display = "none";
-            }, false);
-            commonDiv.appendChild(btnContinue);           
-            options._container.appendChild( commonDiv );
+            commonDiv.appendChild(btn);            
          }
          if (questionType === "single_choice") {
 
@@ -126,16 +117,56 @@
                }                              
             }, false);
             commonDiv.appendChild(btn);
-            btnContinue = document.createElement("input");
-            btnContinue.setAttribute("type","button");
-            btnContinue.setAttribute("value","Continue");
-            btnContinue.addEventListener( "click", function() {
-               continue_video(start);
-               options._container.style.display = "none";
+         }
+         if (questionType === "numerical_answer") {
+            var commonDiv = document.createElement("div"); 
+
+            commonDiv.innerHTML = question + "<br />";
+
+            var input = document.createElement("input");
+            input.setAttribute("type","number");
+            input.setAttribute("id","question-"+qid);               
+            input.setAttribute("name","numanswer");
+            commonDiv.appendChild(input);
+
+            var btn = document.createElement("input");
+
+            btn.setAttribute("type","button");
+            btn.setAttribute("id","btnAnswer");
+            btn.setAttribute("value","Answer");
+            btn.addEventListener( "click", function() {
+               var id_str = "question-"+qid;
+               var input = document.getElementById(id_str);       
+               if (input.value == answer) {
+                  alert("Congratz!!! You got it!!! :)");                  
+                  if (options.jump_time) {
+                     btnJump = document.createElement("input");
+                     btnJump.setAttribute("type","button");
+                     btnJump.setAttribute("id","buttonJump");
+                     btnJump.setAttribute("value","Jump Solution");
+                     btnJump.addEventListener( "click", function() {
+                        continue_video(jump_time);
+                        options._container.style.display = "none";
+                     }, false);
+                     commonDiv.appendChild(btnJump);
+                  }
+               }
+               else {
+                  alert("Sorry,its incorrect. Try again :)");
+               }                              
             }, false);
-            commonDiv.appendChild(btnContinue);           
-            options._container.appendChild( commonDiv );
-         }       
+            commonDiv.appendChild(btn);
+         }
+         btnContinue = document.createElement("input");
+         btnContinue.setAttribute("type","button");
+         btnContinue.setAttribute("value","Continue");
+         btnContinue.addEventListener( "click", function() {
+            continue_video(start);
+            options._container.style.display = "none";
+         }, false);
+         commonDiv.appendChild(btnContinue);           
+         options._container.appendChild( commonDiv );
+
          target && target.appendChild( options._container );
       },
       start: function( event, options ){
@@ -156,7 +187,7 @@
          // options refers to the options passed into the plugin on init
          // this refers to the popcorn object
          if( options._container ) {
-            options._container.style.display = "none";
+            options._container.style.display = "none";            
          }
       }    
    });
