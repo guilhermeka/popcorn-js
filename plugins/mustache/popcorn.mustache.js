@@ -95,9 +95,6 @@
         typeOfData = typeof options.data,
         target = document.getElementById( options.target );
 
-    if ( !target && Popcorn.plugin.debug ) {
-      throw new Error( "target container doesn't exist" );
-    }
     options.container = target || document.createElement( "div" );
 
     if ( typeOfTemplate === "function" ) {
@@ -108,8 +105,6 @@
       }
     } else if ( typeOfTemplate === "string" ) {
       template = options.template;
-    } else if ( Popcorn.plugin.debug ) {
-      throw new Error( "Mustache Plugin Error: options.template must be a String or a Function." );
     } else {
       template = "";
     }
@@ -124,8 +119,6 @@
       data = JSON.parse( options.data );
     } else if ( typeOfData === "object" ) {
       data = options.data;
-    } else if ( Popcorn.plugin.debug ) {
-      throw new Error( "Mustache Plugin Error: options.data must be a String, Object, or Function." );
     } else {
       data = "";
     }
@@ -179,13 +172,13 @@
     options: {
       start: {
         elem: "input",
-        type: "text",
-        label: "In"
+        type: "number",
+        label: "Start"
       },
       end: {
         elem: "input",
-        type: "text",
-        label: "Out"
+        type: "number",
+        label: "End"
       },
       target: "mustache-container",
       template: {
@@ -198,12 +191,11 @@
         type: "text",
         label: "Data"
       },
-      /* TODO: how to show a checkbox/boolean? */
       dynamic: {
         elem: "input",
-        type: "text",
+        type: "checkbox",
         label: "Dynamic",
-        optional: true
+        "default": true
       }
     }
   });

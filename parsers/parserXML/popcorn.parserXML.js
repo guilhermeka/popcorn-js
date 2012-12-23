@@ -41,7 +41,8 @@
       for ( var i = 0, nal = nodeAttributes.length; i < nal; i++ ) {
 
         var key  = nodeAttributes.item(i).nodeName,
-            data = nodeAttributes.item(i).nodeValue;
+            data = nodeAttributes.item(i).nodeValue,
+            manifestItem = manifestData[ data ];
 
         // converts in into start
         if (key === "in") {
@@ -51,7 +52,13 @@
           returnObject.end = toSeconds( data );
         // this is where ids in the manifest are linked
         } else if ( key === "resourceid" ) {
-          Popcorn.extend( returnObject, manifestData[data] );
+          for ( var item in manifestItem ) {
+            if ( manifestItem.hasOwnProperty( item ) ) {
+              if ( !returnObject[ item ] && item !== "id" ) {
+                returnObject[ item ] = manifestItem[ item ];
+              }
+            }
+          }
         // everything else
         } else {
           returnObject[key] = data;
@@ -72,7 +79,7 @@
     // recursive function to process a node, or process the next child node
     var parseNode = function ( node, allAttributes, manifest ) {
       var attributes = {};
-      Popcorn.extend( attributes, allAttributes, objectifyAttributes( node.attributes ), { text: node.textContent } );
+      Popcorn.extend( attributes, allAttributes, objectifyAttributes( node.attributes ), { text: node.textContent || node.text } );
 
       var childNodes = node.childNodes;
 

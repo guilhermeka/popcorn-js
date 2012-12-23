@@ -1,10 +1,11 @@
 test( "Popcorn Code Plugin", function() {
 
   var popped = Popcorn( "#video" ),
-      expects = 9,
+      expects = 11,
       count = 0,
       frames = 0,
-      codeDiv = document.getElementById( "code-div" );
+      codeDiv = document.getElementById( "code-div" ),
+      hasCheckedFrame = false;
 
   expect( expects );
 
@@ -21,6 +22,19 @@ test( "Popcorn Code Plugin", function() {
 
   equal( codeDiv.innerHTML, "", "initially, there is nothing inside the code-div" );
   plus();
+
+  popped.code({
+    start: 0,
+    end: 2,
+    onStart: function( options ) {
+      ok( this instanceof Popcorn, "this instanceof Popcorn, onStart" );
+      plus();
+    },
+    onEnd: function( options ) {
+      ok( this instanceof Popcorn, "this instanceof Popcorn, onEnd" );
+      plus();
+    }
+  });
 
   popped.code({
     start: 0,
@@ -56,6 +70,12 @@ test( "Popcorn Code Plugin", function() {
       plus();
     },
     onFrame: function ( options ) {
+
+      if ( !hasCheckedFrame ) {
+        hasCheckedFrame = true;
+        ok( this instanceof Popcorn, "this instanceof Popcorn, onFrame" );
+        plus();
+      }
       codeDiv.innerHTML += ".";
       frames++;
     },
@@ -70,16 +90,8 @@ test( "Popcorn Code Plugin", function() {
   });
 
   // empty track events should be safe
-  popped.code({});
-
-  // debug should log errors on empty track events
   Popcorn.plugin.debug = true;
-  try {
-    popped.code({});
-  } catch( e ) {
-    ok( true, "empty event was caught by debug" );
-    plus();
-  }
+  popped.code({});
 
   popped.volume( 0 );
   popped.play();

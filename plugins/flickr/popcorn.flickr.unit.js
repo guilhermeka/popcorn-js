@@ -1,7 +1,7 @@
 test( "Popcorn Flickr Plugin", function() {
 
   var popped = Popcorn( "#video" ),
-      expects = 11,
+      expects = 10,
       count = 0,
       setupId,
       flickrdiv = document.getElementById( "flickrdiv" );
@@ -83,17 +83,37 @@ test( "Popcorn Flickr Plugin", function() {
   });
 
   // empty track events should be safe
-  popped.flickr({});
-
-  // debug should log errors on empty track events
   Popcorn.plugin.debug = true;
-  try {
-    popped.flickr({});
-  } catch( e ) {
-    ok( true, "empty event was caught by debug" );
-    plus();
-  }
+  popped.flickr({});
 
   popped.volume( 0 ).play();
 
+});
+
+asyncTest( "Overriding default toString", 3, function() {
+  var p = Popcorn( "#video" ),
+      tagsText = "Work Work",
+      usernameText = "Some sweet license text",
+      lastEvent;
+
+  function testLastEvent( compareText, message ) {
+    lastEvent = p.getTrackEvent( p.getLastTrackEventId() );
+    equal( lastEvent.toString(), compareText, message );
+  }
+
+  p.flickr({
+    tags: tagsText,
+    username: usernameText
+  });
+  testLastEvent( tagsText, "Custom text displayed with toString using tags" );
+
+  p.flickr({
+    username: usernameText
+  });
+  testLastEvent( usernameText, "Custom text displayed with toString using username" );
+
+  p.flickr({});
+  testLastEvent( "Flickr", "Flickr displayed if nothing exists" );
+
+  start();
 });

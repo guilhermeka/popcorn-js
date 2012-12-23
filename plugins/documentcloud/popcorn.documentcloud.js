@@ -39,13 +39,13 @@ api - https://github.com/documentcloud/document-viewer/blob/master/public/javasc
       options: {
         start: {
           elem: "input",
-          type: "text",
-          label: "In"
+          type: "number",
+          label: "Start"
         },
         end: {
           elem: "input",
-          type: "text",
-          label: "Out"
+          type: "number",
+          label: "End"
         },
         target: "documentcloud-container",
         width: {
@@ -62,14 +62,15 @@ api - https://github.com/documentcloud/document-viewer/blob/master/public/javasc
         },
         src: {
           elem: "input",
-          type: "text",
-          label: "PDF URL"
+          type: "url",
+          label: "PDF URL",
+          "default": "http://www.documentcloud.org/documents/70050-urbina-day-1-in-progress.html"
         },
         preload: {
           elem: "input",
-          type: "boolean",
+          type: "checkbox",
           label: "Preload",
-          optional: true
+          "default": true
         },
         page: {
           elem: "input",
@@ -220,6 +221,10 @@ api - https://github.com/documentcloud/document-viewer/blob/master/public/javasc
         readyCheck();
       }
 
+      options.toString = function() {
+        // use the default option if it doesn't exist
+        return options.src || options._natives.manifest.options.src[ "default" ];
+      };
     },
 
     start: function( event, options ) {

@@ -69,7 +69,8 @@
   */
 
   Popcorn.plugin( "code" , function( options ) {
-    var running = false;
+    var running = false,
+        instance = this;
 
     // Setup a proper frame interval function (60fps), favouring paint events.
     var step = (function() {
@@ -78,7 +79,7 @@
         return function( f, options ) {
 
           var _f = function() {
-            running && f();
+            running && f.call( instance, options );
             running && runner( _f );
           };
 
@@ -101,31 +102,22 @@
 
     if ( !options.onStart || typeof options.onStart !== "function" ) {
 
-      if ( Popcorn.plugin.debug ) {
-        throw new Error( "Popcorn Code Plugin Error: onStart must be a function." );
-      }
       options.onStart = Popcorn.nop;
     }
 
     if ( options.onEnd && typeof options.onEnd !== "function" ) {
 
-      if ( Popcorn.plugin.debug ) {
-        throw new Error( "Popcorn Code Plugin Error: onEnd  must be a function." );
-      }
       options.onEnd = undefined;
     }
 
     if ( options.onFrame && typeof options.onFrame !== "function" ) {
 
-      if ( Popcorn.plugin.debug ) {
-        throw new Error( "Popcorn Code Plugin Error: onFrame  must be a function." );
-      }
       options.onFrame = undefined;
     }
 
     return {
       start: function( event, options ) {
-        options.onStart( options );
+        options.onStart.call( instance, options );
 
         if ( options.onFrame ) {
           running = true;
@@ -139,7 +131,7 @@
         }
 
         if ( options.onEnd ) {
-          options.onEnd( options );
+          options.onEnd.call( instance, options );
         }
       }
     };
@@ -154,13 +146,13 @@
     options: {
       start: {
        elem: "input",
-       type: "text",
-       label: "In"
+       type: "number",
+       label: "Start"
       },
       end: {
         elem: "input",
-        type: "text",
-        label: "Out"
+        type: "number",
+        label: "End"
       },
       onStart: {
         elem: "input",

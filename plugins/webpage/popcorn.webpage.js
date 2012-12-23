@@ -43,18 +43,19 @@
         },
         start: {
           elem: "input",
-          type: "text",
-          label: "In"
+          type: "number",
+          label: "Start"
         },
         end: {
           elem: "input",
-          type: "text",
-          label: "Out"
+          type: "number",
+          label: "End"
         },
         src: {
           elem: "input",
           type: "url",
-          label: "Src"
+          label: "Webpage URL",
+          "default": "http://mozillapopcorn.org"
         },
         target: "iframe-container"
       }
@@ -73,10 +74,6 @@
       options._iframe.id = options.id;
       options._iframe.src = options.src;
       options._iframe.style.display = "none";
-
-      if ( !target && Popcorn.plugin.debug ) {
-        throw new Error( "target container doesn't exist" );
-      }
 
       // add the hidden iframe to the DOM
       target && target.appendChild( options._iframe );

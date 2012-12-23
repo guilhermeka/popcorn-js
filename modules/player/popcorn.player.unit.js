@@ -1,3 +1,6 @@
+// Order matters, and async before sync
+QUnit.config.reorder = false;
+
 module( "Popcorn Player" );
 
 test( "Base player methods", 4, function() {
@@ -8,7 +11,7 @@ test( "Base player methods", 4, function() {
 
   Popcorn.player( "newplayer" );
   ok( Popcorn.newplayer, "Popcorn.player registers new players" );
-  ok( Popcorn.player.registry[ "newplayer" ], "newplayers enter Popcorn.player.registry" );
+  ok( Popcorn.player.registry.newplayer, "newplayers enter Popcorn.player.registry" );
 
 });
 
@@ -197,16 +200,18 @@ test( "player gets a proper _teardown", 1, function() {
 
 asyncTest( "Popcorn.smart player selector", function() {
 
-  var expects = 10,
-      count = 0;
+  var expects = 11,
+      count = 0,
+      timeout;
 
   function plus() {
+
     if ( ++count == expects ) {
+      document.getElementById( "video" ).innerHTML = "";
       start();
     }
   }
   expect( expects );
-
   Popcorn.player( "spartaPlayer", {
     _canPlayType: function( nodeName, url ) {
 
@@ -221,8 +226,18 @@ asyncTest( "Popcorn.smart player selector", function() {
   plus();
   ok( Popcorn.spartaPlayer.canPlayType( "unsupported element", "this is sparta" ) === false, "canPlayType method fails on invalid container!" );
   plus();
-  equal( Popcorn.smart( "#video", "this is sparta" ).media.nodeName, "DIV", "A player was found for this URL" );
+  ok( !!Popcorn.smart( "#video", "this is sparta" ).media.nodeName, "A player was found for this URL" );
   plus();
+
+  // invalid target throws meaningful error
+  try {
+
+    Popcorn.smart( "#non_existing_tag", "this is sparta" );
+  } catch ( e ) {
+
+    ok( true, "Popcorn.smart throws exception when target is invalid." );
+    plus();
+  }
 
   // not matching url to player returns false
   ok( Popcorn.spartaPlayer.canPlayType( "div", "this is not sparta" ) === false, "canPlayType method fails on invalid url!" );
@@ -234,11 +249,21 @@ asyncTest( "Popcorn.smart player selector", function() {
     events: {
       error: function( e ) {
 
+        clearTimeout( timeout );
         ok( true, "invalid player failed and called error callback" );
         plus();
       }
     }
   });
+
+  // Safari won't pass this test, so we'll just skip it
+  // https://bugs.webkit.org/show_bug.cgi?id=88423
+  // https://webmademovies.lighthouseapp.com/projects/63272-popcornjs/tickets/1226
+  timeout = setTimeout(function() {
+
+    ok( true, "Workaround for Safari regression on error event with error callback test" );
+    plus();
+  }, 1000 );
 
   equal( thisIsNotSparta.media.nodeName, "VIDEO", "no player was found for this URL, default to video element" );
   plus();
@@ -246,9 +271,6 @@ asyncTest( "Popcorn.smart player selector", function() {
   // no existing canPlayType function returns undefined
   ok( Popcorn.neverEverLand.canPlayType( "guessing time!", "is this sparta?" ) === undefined, "non exist canPlayType returns undefined" );
   plus();
-
-  var loaded = false,
-      error = false;
 
   Popcorn.player( "somePlayer", {
     _canPlayType: function( nodeName, url ) {
@@ -261,7 +283,8 @@ asyncTest( "Popcorn.smart player selector", function() {
     events: {
       canplaythrough: function( e ) {
 
-        loaded = true;
+        ok( true, "canPlayType passed on a valid type" );
+        plus();
       }
     }
   }).destroy();
@@ -270,21 +293,17 @@ asyncTest( "Popcorn.smart player selector", function() {
     events: {
       error: function( e ) {
 
-        error = true;
+        ok( true, "canPlayType failed on an invalid type" );
+        plus();
       }
     }
   }).destroy();
-
-  equal( loaded, true, "canPlayType passed on a valid type" );
-  plus();
-  equal( error, true, "canPlayType failed on an invalid type" );
-  plus();
 
 });
 
 asyncTest( "Popcorn.smart - audio and video elements", function() {
 
-  var expects = 8,
+  var expects = 2,
       count = 0,
       instanceDiv = document.getElementById( "video" ),
       p;
@@ -295,8 +314,8 @@ asyncTest( "Popcorn.smart - audio and video elements", function() {
     }
   }
 
-  p = Popcorn.smart( "#video",  "../../test/italia.ogg" );
-  equal( instanceDiv.children[ 0 ].nodeName, "AUDIO", "Smart player correctly creates audio elements" );
+  p = Popcorn.smart( "#video",  [ "../../test/italia.ogg", "../../test/silence.mp3" ] );
+  equal( instanceDiv.children[ 0 ].nodeName, "VIDEO", "Smart player correctly creates HTML5 media elements" );
   instanceDiv.innerHTML = "";
   p.destroy();
   plus();
@@ -306,27 +325,43 @@ asyncTest( "Popcorn.smart - audio and video elements", function() {
   p.destroy();
   plus();
 
-  p = Popcorn.smart( "#audioElement" );
-  equal( p.media.nodeName, "AUDIO", "Using the audio element itself works" );
-  plus();
-  equal( p.media.getAttribute( "src" ), "../../test/italia.ogg", "Using original audio src" );
-  p.destroy();
-  plus();
+});
 
-  p = Popcorn.smart( "#videoElement" );
-  equal( p.media.nodeName, "VIDEO", "Using the video element itself works" );
-  plus();
-  equal( p.media.getAttribute( "src" ), "../../test/trailer.ogv", "Using original video src" );
-  p.destroy();
-  plus();
+asyncTest( "Popcorn.smart - controls off by default as per spec", function() {
+  var p1 = Popcorn.smart( "#videoControls", "../../test/trailer.ogv" );
 
-  p = Popcorn.smart( "#audioElement", "http://upload.wikimedia.org/wikipedia/commons/1/1d/Demo_chorus.ogg" );
-  equal( p.media.src, "http://upload.wikimedia.org/wikipedia/commons/1/1d/Demo_chorus.ogg", "Overwrote original source on audio element, using specified source" );
-  p.destroy();
-  plus();
+  ok( !p1.controls(), "Video Element has no controls" );
+  start();
+});
 
-  p = Popcorn.smart( "#videoElement", "http://videos.mozilla.org/serv/webmademovies/atultroll.webm" );
-  equal( p.media.src, "http://videos.mozilla.org/serv/webmademovies/atultroll.webm", "Overwrote original source on video element, using specified source" );
-  p.destroy();
-  plus();
+asyncTest( "Popcorn.smart - YouTube wrapper", 1, function() {
+  var src = "http://www.youtube.com/watch/?v=nfGV32RNkhw",
+    p1 = Popcorn.smart( "#video", src );
+
+  p1.on( "loadedmetadata", function() {
+    equal( p1.media.src, src, "Popcorn.smart correctly uses YouTube Wrapper" );
+    start();
+  });
+});
+
+asyncTest( "Popcorn.smart - Vimeo wrapper", 1, function() {
+
+  var src = "http://vimeo.com/12235444",
+    p1 = Popcorn.smart( "#video", src );
+
+  p1.on( "loadedmetadata", function() {
+    equal( p1.media.currentSrc, src, "Popcorn.smart correctly uses Vimeo Wrapper" );
+    start();
+  });
+});
+
+asyncTest( "Popcorn.smart - Null Video wrapper", 1, function() {
+
+  var src = "#t=,100",
+    p1 = Popcorn.smart( "#video", src );
+
+  p1.on( "loadedmetadata", function() {
+    equal( p1.media.currentSrc, src, "Popcorn.smart correctly uses Null Video Wrapper" );
+    start();
+  });
 });

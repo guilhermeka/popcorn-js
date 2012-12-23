@@ -14,6 +14,7 @@
 
   <script src="popcorn.googlemap.unit.js"></script>
   <script src="../../test/inject.js"></script>
+  <script src="../../test/popcorn.inject.js"></script>
 </head>
 <body>
   <h1 id="qunit-header">Popcorn Google Map Plugin</h1>
@@ -24,7 +25,7 @@
   <div id="qunit-fixture">  </div>
 
   <video id="video"
-    controls 
+    controls
     width="250px"
     poster="../../test/poster.png">
 
@@ -46,6 +47,12 @@
   <div id="map" style="position:relative;float:left;width:300px;height:400px"></div>
   <div id="map2" style="position:relative;float:left;width:300px;height:400px"></div>
   <div id="map3" style="position:relative;float:left;width:300px;height:400px"></div>
+  <!-- Testing basic height and width detection -->
+  <div id="height1" style="width:300px;height:400px"></div>
+  <!-- Testing explicit height and width plugin option with no css -->
+  <div id="height2"></div>
+  <!-- Testing explicit height and width plugin option overrides css -->
+  <div id="height3" style="width:300px;height:400px"></div>
 </body>
 </html>
 

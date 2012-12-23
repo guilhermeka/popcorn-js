@@ -40,9 +40,7 @@
           events = {},
 
           // The container div of the resource
-          container = document.getElementById( rIdExp.exec( target ) && rIdExp.exec( target )[ 2 ] ) ||
-                        document.getElementById( target ) ||
-                          target,
+          container = typeof target === "string" ? Popcorn.dom.find( target ) : target,
           basePlayer = {},
           timeout,
           popcorn;
@@ -187,7 +185,7 @@
         },
         configurable: true
       });
-      
+
       // Adds an event listener to the object
       basePlayer.addEventListener = function( evtName, fn ) {
 
@@ -281,32 +279,18 @@
         }
       } else {
 
-        basePlayer.dispatchEvent( "error" );
+        // Asynchronous so that users can catch this event
+        setTimeout( function() {
+          basePlayer.dispatchEvent( "error" );
+        }, 0 );
       }
-
-      // when a custom player is loaded, load basePlayer state into custom player
-      basePlayer.addEventListener( "loadedmetadata", function() {
-
-        // if a player is not ready before currentTime is called, this will set it after it is ready
-        basePlayer.currentTime = currentTime;
-
-        // same as above with volume and muted
-        basePlayer.volume = volume;
-        basePlayer.muted = muted;
-      });
-
-      basePlayer.addEventListener( "loadeddata", function() {
-
-        // if play was called before player ready, start playing video
-        !basePlayer.paused && basePlayer.play();
-      });
 
       popcorn = new Popcorn.p.init( basePlayer, options );
 
       if ( player._teardown ) {
 
         popcorn.destroy = combineFn( popcorn.destroy, function() {
-        
+
           player._teardown.call( basePlayer, options );
         });
       }
@@ -327,55 +311,102 @@
     object.__defineSetter__( description, options.set || Popcorn.nop );
   };
 
-  // smart will attempt to find you a match, if it does not find a match,
-  // it will attempt to create a video element with the source,
-  // if that failed, it will throw.
-  Popcorn.smart = function( target, src, options ) {
+  // player queue is to help players queue things like play and pause
+  // HTML5 video's play and pause are asynch, but do fire in sequence
+  // play() should really mean "requestPlay()" or "queuePlay()" and
+  // stash a callback that will play the media resource when it's ready to be played
+  Popcorn.player.playerQueue = function() {
 
-    var nodeId = rIdExp.exec( target ),
-        playerType,
-        elementTypes = [ "AUDIO", "VIDEO" ],
-        node = nodeId && nodeId.length && nodeId[ 2 ] ?
-                 document.getElementById( nodeId[ 2 ] ) :
-                 target;
+    var _queue = [],
+        _running = false;
 
-    if ( elementTypes.indexOf( node.nodeName ) > -1 && !src ) {
+    return {
+      next: function() {
 
-      if ( typeof src === "object" ) {
+        _running = false;
+        _queue.shift();
+        _queue[ 0 ] && _queue[ 0 ]();
+      },
+      add: function( callback ) {
 
-        options = src;
-        src = undefined;
+        _queue.push(function() {
+
+          _running = true;
+          callback && callback();
+        });
+
+        // if there is only one item on the queue, start it
+        !_running && _queue[ 0 ]();
       }
+    };
+  };
 
-      return Popcorn( node, options );
+  // Popcorn.smart will attempt to find you a wrapper or player. If it can't do that,
+  // it will default to using an HTML5 video in the target.
+  Popcorn.smart = function( target, src, options ) {
+    var node = typeof target === "string" ? Popcorn.dom.find( target ) : target,
+        i, srci, j, media, mediaWrapper, popcorn, srcLength, 
+        // We leave HTMLVideoElement and HTMLAudioElement wrappers out
+        // of the mix, since we'll default to HTML5 video if nothing
+        // else works.  Waiting on #1254 before we add YouTube to this.
+        wrappers = "HTMLVimeoVideoElement HTMLSoundCloudAudioElement HTMLNullVideoElement".split(" ");
+
+    if ( !node ) {
+      Popcorn.error( "Specified target `" + target + "` was not found." );
+      return;
     }
 
-    // for now we loop through and use the first valid player we find.
-    for ( var key in Popcorn.player.registry ) {
+    // If our src is not an array, create an array of one.
+    src = typeof src === "string" ? [ src ] : src;
 
-      if ( Popcorn.player.registry.hasOwnProperty( key ) ) {
+    // Loop through each src, and find the first playable.
+    for ( i = 0, srcLength = src.length; i < srcLength; i++ ) {
+      srci = src[ i ];
 
-        if ( Popcorn.player.registry[ key ].canPlayType( node.nodeName, src ) ) {
+      // See if we can use a wrapper directly, if not, try players.
+      for ( j = 0; j < wrappers.length; j++ ) {
+        mediaWrapper = Popcorn[ wrappers[ j ] ];
+        if ( mediaWrapper && mediaWrapper._canPlaySrc( srci ) === "probably" ) {
+          media = mediaWrapper( node );
+          popcorn = Popcorn( media, options );
+          // Set src, but not until after we return the media so the caller
+          // can get error events, if any.
+          setTimeout( function() {
+            media.src = srci;
+          }, 0 );
+          return popcorn;
+        }
+      }
 
-          // Popcorn.smart( player, src, /* options */ )
-          return Popcorn[ key ]( target, src, options );
+      // No wrapper can play this, check players.
+      for ( var key in Popcorn.player.registry ) {
+        if ( Popcorn.player.registry.hasOwnProperty( key ) ) {
+          if ( Popcorn.player.registry[ key ].canPlayType( node.nodeName, srci ) ) {
+            // Popcorn.smart( player, src, /* options */ )
+            return Popcorn[ key ]( node, srci, options );
+          }
         }
       }
     }
 
-    // Popcorn.smart( div, src, /* options */ )
-    // attempting to create a video in a container
-    if ( elementTypes.indexOf( node.nodeName ) === -1 ) {
+    // If we don't have any players or wrappers that can handle this,
+    // Default to using HTML5 video.  Similar to the HTMLVideoElement
+    // wrapper, we put a video in the div passed to us via:
+    // Popcorn.smart( div, src, options )
+    var videoHTML, videoID = Popcorn.guid( "popcorn-video-" );
 
-      target = document.createElement( !!/^.*\.(ogg|aac|mp3|wav)$/.exec( src ) ? elementTypes[ 0 ] : elementTypes[ 1 ] );
-
-      node.appendChild( target );
-      node = target;
+    // IE9 doesn't like dynamic creation of source elements on <video>
+    // so we do it in one shot via innerHTML.
+    videoHTML = '<video id="' +  videoID + '" preload=auto autobuffer>';
+    for ( i = 0, srcLength = src.length; i < srcLength; i++ ) {
+      videoHTML += '<source src="' + src[ i ] + '">';
     }
+    videoHTML += "</video>";
+    node.innerHTML = videoHTML;
 
-    options && options.events && options.events.error && node.addEventListener( "error", options.events.error, false );
-    node.src = src;
-
-    return Popcorn( node, options );
+    if ( options && options.events && options.events.error ) {
+      node.addEventListener( "error", options.events.error, false );
+    }
+    return Popcorn( '#' + videoID, options );
   };
 })( Popcorn );

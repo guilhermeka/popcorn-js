@@ -65,8 +65,6 @@
         container.appendChild( contentDiv );
       }
 
-    } else if ( Popcorn.plugin.debug ) {
-      throw new Error( "target container doesn't exist" );
     }
 
     i++;
@@ -109,35 +107,35 @@
     options: {
       start: {
         elem: "input",
-        type: "text",
-        label: "In"
+        type: "number",
+        label: "Start"
       },
       end: {
         elem: "input",
-        type: "text",
-        label: "Out"
+        type: "number",
+        label: "End"
       },
       target: "feed-container",
       title: {
         elem: "input",
         type: "text",
-        label: "title"
+        label: "Title"
       },
       text: {
         elem: "input",
         type: "text",
-        label: "text"
+        label: "Text"
       },
       innerHTML: {
         elem: "input",
         type: "text",
-        label: "innerHTML",
+        label: "HTML Code",
         optional: true
       },
       direction: {
-        elem: "input",
-        type: "text",
-        label: "direction",
+        elem: "select",
+        options: [ "DOWN", "UP" ],
+        label: "Direction",
         optional: true
       }
     }

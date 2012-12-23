@@ -6,9 +6,17 @@
   <script src="../../test/qunit/qunit.js"></script>
 
   <script src="../../popcorn.js"></script>
+  <script src="../../wrappers/common/popcorn._MediaElementProto.js"></script>
+  <script src="../../wrappers/youtube/popcorn.HTMLYouTubeVideoElement.js"></script>
+  <script src="../../wrappers/vimeo/popcorn.HTMLVimeoVideoElement.js"></script>
+  <script src="../../wrappers/soundcloud/popcorn.HTMLSoundCloudAudioElement.js"></script>
+  <script src="../../wrappers/null/popcorn.HTMLNullVideoElement.js"></script>
+  <script src="../../wrappers/html5/popcorn.HTMLMediaElement.js"></script>
   <script src="popcorn.player.js"></script>
+  <script src="../../players/youtube/popcorn.youtube.js"></script>
   <script src="popcorn.player.unit.js"></script>
   <script src="../../test/inject.js"></script>
+  <script src="../../test/popcorn.inject.js"></script>
 </head>
 <body>
   <h1 id="qunit-header">Popcorn Module: player</h1>
@@ -19,7 +27,21 @@
   <div id="qunit-fixture">  </div>
 
   <div id="video"></div>
+  <div id="videoControls"></div>
   <audio id="audioElement" src="../../test/italia.ogg"></audio>
   <video id="videoElement" src="../../test/trailer.ogv"></video>
+  <div id="multi-div"></div>
+  <div id="multi-div-mixed1"></div>
+  <div id="multi-div-mixed2"></div>
+  <div id="multi-div-mixed3"></div>
+  <div id="multi-div-mixed4"></div>
+  <div id="multi-div-mixed5"></div>
+  <div id="multi-div-mixed6"></div>
+  <div id="multi-div-mixed7"></div>
+  <div id="multi-div-mixed8"></div>
+  <div id="multi-div-mixed9"></div>
+  <video id="multi-video" controls></video>
+  <audio id="multi-audio" controls></audio>
+  <video id="multi-video2" controls></video>
 </body>
 </html>
