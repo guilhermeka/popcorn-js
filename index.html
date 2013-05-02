@@ -1,66 +1,74 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Popcorn-js by guilhermeka</title>
+<head>
+	<title>Popcorn Question Plug-in Demo</title>
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <h1>Popcorn-js</h1>
-        <p>The HTML5 Media Framework</p>
+<!-- <script src="http://popcornjs.org/code/dist/popcorn-complete.min.js"></script> -->
+<script src="popcorn.js"></script>
+<script src="popcorn.question.js"></script>
+<script>
+	document.addEventListener( "DOMContentLoaded", function () {
+      var p = Popcorn( "#video" )
+      .volume(0)
+      .play()
+      .question( {
+          qid:"0",
+          questionType:"numerical_answer",
+          target: "questiondiv",
+          start: 1,
+          question: 'Find <em>x</em>? <img src="https://dl.dropboxusercontent.com/s/s56xcnaj48piefs/triangulo.jpg" align="left" />',
+          answer: 8,
+          jump_time: 5
+      } )
+      .question( {
+          qid:"1",
+          questionType:"single_choice",
+          target: "questiondiv",
+          start: 7,
+          question: 'Charles Darwin _____',
+          alternatives: ["was the first person to conclude that organisms evolve.","proposed that unused parts of the body deteriorate.","eagerly published his theory before it was well-developed.","was the first to realize that fossils are remains of ancient organisms.","proposed natural selection as the mechanism of evolution."],
+          answer: 4,
+          jump_time: 10
+      } )
+      .question( {
+          qid: "2", 
+          questionType:"multiple_choice",
+          target: "questiondiv",
+          start: 12,
+          question: 'Which of the following statements are true?',
+          alternatives: ["At least one of these ten statements is false.","At least two of these ten statements are false.","At least three of these ten statements are false.","At least four of these ten statements are false.","At least five of these ten statements are false.","At least six of these ten statements are false.","At least seven of these ten statements are false.","At least eight of these ten statements are false.","At least nine of these ten statements are false.","At least ten of these ten statements are false."],
+          answer: [true,true,true,true,true,false,false,false,false,false]
+          //jump_time: 5
+      } );
+    }, false);
+</script>
 
-        <p class="view"><a href="https://github.com/guilhermeka/popcorn-js">View the Project on GitHub <small>guilhermeka/popcorn-js</small></a></p>
+</head>
+<body>
 
+<h1 id="qunit-header">Popcorn Question Plug-in Demo</h1>
+<p>You will see all types of questions you can include in your videos. A multiple choice example, a select one answer, a question with text answer, a question with numeric answer and a discursive answer.</p>
+<p>In all types you could select the time to launch the question, stoping video. You can answer the question as many times you want, receiving the feedback if your answer was correct or not. To continue the video there is a button called Continue, available even if you dont want to answer. After answer the question, you could show optionally a button called Jump Solution (jump to a future point in the video).</p>
+<div>
+<video id="video"
+  controls 
+  width= "500px"
+  poster="../../test/poster.png">
 
-        <ul>
-          <li><a href="https://github.com/guilhermeka/popcorn-js/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/guilhermeka/popcorn-js/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/guilhermeka/popcorn-js">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h3>Welcome to GitHub Pages.</h3>
+  <source id="mp4"
+    src="../../test/trailer.mp4"
+    type='video/mp4; codecs="avc1, mp4a"'>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+  <source id="ogv"
+    src="../../test/trailer.ogv"
+    type="video/ogg;" codecs="theora, vorbis">
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+  <p>Your user agent does not support the HTML5 Video element.</p>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+</video>
+</div>
+<div id="questiondiv"></div>
 
-<h3>Designer Templates</h3>
+</body>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
-
-<h3>Rather Drive Stick?</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
-
-<h3>Authors and Contributors</h3>
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/guilhermeka">guilhermeka</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
-    </div>
-    <script src="javascripts/scale.fix.js"></script>
-    
-  </body>
 </html>
