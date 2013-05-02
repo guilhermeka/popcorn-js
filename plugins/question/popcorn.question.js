@@ -54,7 +54,7 @@
                  }
                }
                if (correct) {
-                  alert("Congratz!!! You got it!!! :)");
+                  alert("Congratz! You got it!!! :)");
                   if (options.jump_time) {                                       
                      btnJump = document.createElement("input");
                      btnJump.setAttribute("type","button");
@@ -68,7 +68,7 @@
                   }
                }
                else {
-                  alert("Sorry,its incorrect. Try again :)");
+                  alert("Sorry, it's incorrect. Try again :)");
                }                              
             }, false);
             commonDiv.appendChild(btn);            
@@ -99,7 +99,7 @@
                     correct = true;
                }               
                if (correct) {
-                  alert("Congratz!!! You got it!!! :)");                  
+                  alert("Congratz! You got it!!! :)");                  
                   if (options.jump_time) {
                      btnJump = document.createElement("input");
                      btnJump.setAttribute("type","button");
@@ -113,7 +113,7 @@
                   }
                }
                else {
-                  alert("Sorry,its incorrect. Try again :)");
+                  alert("Sorry, it's incorrect. Try again :)");
                }                              
             }, false);
             commonDiv.appendChild(btn);
@@ -152,7 +152,7 @@
                   }
                }
                else {
-                  alert("Sorry,its incorrect. Try again :)");
+                  alert("Sorry, it's incorrect. Try again :)");
                }                              
             }, false);
             commonDiv.appendChild(btn);

@@ -12,33 +12,33 @@
       .volume(0)
       .play()
       .question( {
-          qid: "0", 
-          questionType:"multiple_choice",
+          qid:"0",
+          questionType:"numerical_answer",
           target: "questiondiv",
-          start: 12,
-          question: 'Which of the statements are true? <img src="http://2.bp.blogspot.com/_zPRD1mS0Unc/Sw5_70tqmWI/AAAAAAAAABQ/ZC54Q5sxjXU/s400/pitagorassdd.JPG" align="left" />',
-          alternatives: ["Aaa","Bbb","Ccc"],
-          answer: [true,false,true]
-          //jump_time: 5
+          start: 1,
+          question: 'Find <em>x</em>? <img src="https://dl.dropboxusercontent.com/s/s56xcnaj48piefs/triangulo.jpg" align="left" />',
+          answer: 8,
+          jump_time: 5
       } )
       .question( {
           qid:"1",
           questionType:"single_choice",
           target: "questiondiv",
           start: 7,
-          question: 'Which of the statements are true? <img src="http://www.themetatron.com/wp-content/uploads/2011/01/Skrillex-Logo-original.jpg" align="left" />',
-          alternatives: ["This","That","Those"],
-          answer: 2,
+          question: 'Charles Darwin _____',
+          alternatives: ["was the first person to conclude that organisms evolve.","proposed that unused parts of the body deteriorate.","eagerly published his theory before it was well-developed.","was the first to realize that fossils are remains of ancient organisms.","proposed natural selection as the mechanism of evolution."],
+          answer: 4,
           jump_time: 10
       } )
       .question( {
-          qid:"2",
-          questionType:"numerical_answer",
+          qid: "2", 
+          questionType:"multiple_choice",
           target: "questiondiv",
-          start: 1,
-          question: 'Qual o valor de <em>a</em>? <img src="http://www.repolhopolis.kit.net/hipotenusa.gif" align="left" />',
-          answer: 5,
-          jump_time: 5
+          start: 12,
+          question: 'Which of the following statements are true?',
+          alternatives: ["At least one of these ten statements is false.","At least two of these ten statements are false.","At least three of these ten statements are false.","At least four of these ten statements are false.","At least five of these ten statements are false.","At least six of these ten statements are false.","At least seven of these ten statements are false.","At least eight of these ten statements are false.","At least nine of these ten statements are false.","At least ten of these ten statements are false."],
+          answer: [true,true,true,true,true,false,false,false,false,false]
+          //jump_time: 5
       } );
     }, false);
 </script>
